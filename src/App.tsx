@@ -1,6 +1,20 @@
+import { useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import Papa from 'papaparse'
 import axios from 'axios'
+
+import Table from '@/components/Table'
+
+export type TableRow = {
+  Biotype: string
+  Chromosome: string
+  Ensembl: string
+  'Gene symbol': string
+  Name: string
+  'Seq region end': string
+  'Seq region start': string
+}
+
 async function fetchCsv(): Promise<
   TableRow[]
 > {
@@ -28,20 +42,44 @@ function App() {
       queryFn: fetchCsv,
       staleTime: Infinity,
     })
+
+  const columns = useMemo(
+    () => [
+      {
+        accessorKey: 'Ensembl',
+        header: 'Ensembl',
+      },
+      {
+        accessorKey: 'Gene symbol',
+        header: 'Gene Symbol',
+      },
+      {
+        accessorKey: 'Name',
+        header: 'Name',
+      },
+      {
+        accessorKey: 'Biotype',
+        header: 'Biotype',
+      },
+      {
+        accessorKey: 'Chromosome',
+        header: 'Chromosome',
+      },
+    ],
+    [],
+  )
+
+  return isError ? (
+    <p>Error loading csv file</p>
+  ) : (
+    <div className="p-4">
+      <div className="lg:w-1/2">
+        <Table
+          columns={columns}
+          data={data ?? []}
+        />
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    </div>
   )
 }
 

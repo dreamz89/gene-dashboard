@@ -14,7 +14,11 @@ export default defineConfig([
     extends: [
       js.configs.recommended,
       tseslint.configs.recommended,
+      'eslint:recommended',
     ],
+    rules: {
+      'react/react-in-jsx-scope': 'off',
+    },
     languageOptions: {
       ecmaVersion: 2020,
       globals: globals.browser,

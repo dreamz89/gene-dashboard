@@ -1,6 +1,12 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import {
+  MantineProvider,
+  createTheme,
+} from '@mantine/core'
+import '@mantine/core/styles.css'
+import 'mantine-react-table/styles.css'
+import {
   QueryClient,
   QueryClientProvider,
 } from '@tanstack/react-query'
@@ -10,6 +16,9 @@ import './index.css'
 
 const queryClient = new QueryClient()
 
+const theme = createTheme({
+  /** Put your mantine theme override here */
+})
 
 createRoot(
   document.getElementById('root')!,
@@ -18,7 +27,9 @@ createRoot(
     <QueryClientProvider
       client={queryClient}
     >
-    <App />
+      <MantineProvider theme={theme}>
+        <App />
+      </MantineProvider>
     </QueryClientProvider>
   </StrictMode>,
 )

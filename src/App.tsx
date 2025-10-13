@@ -1,9 +1,12 @@
-import { useMemo } from 'react'
+import {
+  useMemo,
+  useState,
+} from 'react'
 import { useQuery } from '@tanstack/react-query'
-import Papa from 'papaparse'
-import axios from 'axios'
 
+import { fetchCsv } from '@/api/gene'
 import Table from '@/components/Table'
+import Details from '@/components/Details'
 
 export type TableRow = {
   Biotype: string
@@ -15,33 +18,17 @@ export type TableRow = {
   'Seq region start': string
 }
 
-async function fetchCsv(): Promise<
-  TableRow[]
-> {
-  const response = await axios.get(
-    '/data/genes_human.csv',
-    {
-      responseType: 'text',
-    },
-  )
-  const parsed = Papa.parse<TableRow>(
-    response.data,
-    {
-      header: true,
-      skipEmptyLines: true,
-    },
-  )
-
-  return parsed.data
-}
-
 function App() {
-  const { data = [], isError } =
-    useQuery<TableRow[]>({
+  const [ensemblId, setEnsemblId] =
+    useState<string>('')
+
+  const csvQuery = useQuery<TableRow[]>(
+    {
       queryKey: ['genes'],
       queryFn: fetchCsv,
       staleTime: Infinity,
-    })
+    },
+  )
 
   const columns = useMemo(
     () => [
@@ -69,14 +56,26 @@ function App() {
     [],
   )
 
-  return isError ? (
+  const onRowClick = ({
+    Ensembl,
+  }: TableRow) => {
+    setEnsemblId(Ensembl)
+  }
+
+  return csvQuery.isError ? (
     <p>Error loading csv file</p>
   ) : (
-    <div className="p-4">
+    <div className="p-4 flex flex-col gap-4 lg:flex-row">
       <div className="lg:w-1/2">
         <Table
           columns={columns}
-          data={data ?? []}
+          data={csvQuery.data ?? []}
+          onRowClick={onRowClick}
+        />
+      </div>
+      <div>
+        <Details
+          ensemblId={ensemblId}
         />
       </div>
     </div>

@@ -4,18 +4,29 @@ import {
   type MRT_ColumnDef,
 } from 'mantine-react-table'
 
-type TableProps<T extends object> = {
+type Props<T extends object> = {
   columns: MRT_ColumnDef<T>[]
   data: T[]
+  onRowClick: (tableRow: T) => void
 }
 
 const Table = <T extends object>({
   columns,
   data,
-}: TableProps<T>) => {
+  onRowClick,
+}: Props<T>) => {
   const table = useMantineReactTable({
     columns,
     data,
+    mantineTableBodyRowProps: ({
+      row,
+    }) => ({
+      onClick: () =>
+        onRowClick(row.original),
+      style: {
+        cursor: 'pointer',
+      },
+    }),
   })
 
   return (

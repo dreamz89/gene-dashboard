@@ -1,20 +1,33 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useQuery } from '@tanstack/react-query'
+import Papa from 'papaparse'
+import axios from 'axios'
+async function fetchCsv(): Promise<
+  TableRow[]
+> {
+  const response = await axios.get(
+    '/data/genes_human.csv',
+    {
+      responseType: 'text',
+    },
+  )
+  const parsed = Papa.parse<TableRow>(
+    response.data,
+    {
+      header: true,
+      skipEmptyLines: true,
+    },
+  )
+
+  return parsed.data
+}
 
 function App() {
-  const [count, setCount] = useState(0)
-
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+  const { data = [], isError } =
+    useQuery<TableRow[]>({
+      queryKey: ['genes'],
+      queryFn: fetchCsv,
+      staleTime: Infinity,
+    })
       </div>
       <h1>Vite + React</h1>
       <div className="card">

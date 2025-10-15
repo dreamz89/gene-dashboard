@@ -3,6 +3,7 @@ import {
   useMantineReactTable,
   type MRT_ColumnDef,
 } from 'mantine-react-table'
+import { useState } from 'react'
 
 type Props<T extends object> = {
   columns: MRT_ColumnDef<T>[]
@@ -15,16 +16,24 @@ const Table = <T extends object>({
   data,
   onRowClick,
 }: Props<T>) => {
+  const [activeRowId, setActiveRowId] = useState<string>('')
+
   const table = useMantineReactTable({
     columns,
     data,
     mantineTableBodyRowProps: ({
       row,
     }) => ({
-      onClick: () =>
-        onRowClick(row.original),
+      onClick: () => {
+        setActiveRowId(row.id)
+        onRowClick(row.original)
+      },
       style: {
         cursor: 'pointer',
+        backgroundColor:
+          row.id === activeRowId
+            ? 'var(--mantine-color-blue-light)'
+            : 'transparent',
       },
     }),
   })

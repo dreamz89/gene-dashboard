@@ -65,7 +65,7 @@ function App() {
   return csvQuery.isError ? (
     <p>Error loading csv file</p>
   ) : (
-    <div className="p-4 flex flex-col gap-4 lg:flex-row">
+    <div className="p-4 flex flex-col gap-8 lg:flex-row">
       <div className="lg:w-1/2">
         <Table
           columns={columns}
@@ -73,10 +73,12 @@ function App() {
           onRowClick={onRowClick}
         />
       </div>
-      <div>
-        <Details
-          ensemblId={ensemblId}
-        />
+      <div className="lg:w-1/2">
+        {ensemblId && (
+          <Details
+            ensemblId={ensemblId}
+          />
+        )}
       </div>
     </div>
   )
